@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantum-pinn"
+version = "0.1.0"
+description = "PINNs based quantum harmonic oscillator solver"
+requires-python = ">=3.10"
+dependencies = ["numpy", "torch", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tools.setuptools.packages.find]
+where = ["src"]
+
+[tools.pytests.ini_options]
+testpaths = ["tests"]
