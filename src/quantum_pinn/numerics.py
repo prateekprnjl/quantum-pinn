@@ -15,7 +15,7 @@ def se_residual(psi: torch.Tensor, x: torch.Tensor, energy: torch.Tensor, potent
     _, d2psi_dx = derivatives(psi, x)
 
     kinetic = -0.5 * d2psi_dx
-    potential_energy = potential * psi
+    potential_energy = potential(x) * psi
 
     residual = kinetic + potential_energy - energy * psi
 
@@ -38,7 +38,7 @@ def boundary_residual(model, x_min: float, x_max: float) -> torch.Tensor:
 
     return torch.mean(psi_boundary**2)
 
-def loss(model, x: torch.Tensor, potential, norm_weight: float = 5.0, boundary_weight = 5.0) -> tuple[torch.Tensor, dict[str, float]]:
+def loss(model, x: torch.Tensor, potential, se_weight: float = 5.0, norm_weight: float = 5.0, boundary_weight = 5.0) -> tuple[torch.Tensor, dict[str, float]]:
     # Return total loss from the simulation
     # Hyperparameters: norm_weight, boundary_weight
 
@@ -48,7 +48,7 @@ def loss(model, x: torch.Tensor, potential, norm_weight: float = 5.0, boundary_w
     norm = norm_residual(psi, x)
     boundary = boundary_residual(model, float(torch.min(x)), float(torch.max(x)))
 
-    total_loss = se + (norm_weight * norm) + (boundary_weight * boundary)
+    total_loss = (se * se_weight) + (norm_weight * norm) + (boundary_weight * boundary)
     losses = {
         "Total loss": float(total_loss.detach()), 
         "SE loss": float(se.detach()),
