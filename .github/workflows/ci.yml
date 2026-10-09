@@ -1,0 +1,29 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              run: actions/checkout@v6
+
+            - name: Setup Python
+              uses: actions/setup-python@v6
+              with:
+                python-version: 3.13
+                cache: pip
+            
+            - name: Install project
+              run: python -m pip install -e ".[dev]"
+            
+            - name: Check importing
+              run: python -c "import quantum_pinn; print('Successfully imported.')"
+
+            - name: Run tests
+              run: python -m pytest -v
+              
